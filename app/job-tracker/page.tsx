@@ -36,6 +36,8 @@ type Job = {
   notes: string;
 };
 
+type QuestionGroup = { category: string; questions: string[] };
+
 const STATUS_CONFIG: Record<Status, { label: string; color: string; bg: string; order: number }> = {
   wishlist:  { label: "Wishlist",   color: "text-slate-600",  bg: "bg-slate-100 border-slate-200",   order: 0 },
   applied:   { label: "Applied",    color: "text-blue-700",   bg: "bg-blue-100 border-blue-200",     order: 1 },
@@ -48,6 +50,186 @@ const EMPTY_JOB: Omit<Job, "id" | "dateAdded"> = {
   company: "", role: "", url: "", location: "", status: "wishlist",
   dateApplied: "", salary: "", requirements: "", notes: "",
 };
+
+// ─── INTERVIEW QUESTION BANK ─────────────────────────────────────────────────
+
+const QUESTION_BANK: Array<{ category: string; triggers: string[]; questions: string[] }> = [
+  {
+    category: "ISO 27001 / ISO 27002",
+    triggers: ["iso 27001", "iso27001", "27001", "isms", "iso 27002", "27002", "information security management"],
+    questions: [
+      "Jelaskan perbedaan ISO 27001 dan ISO 27002. Apa peran masing-masing dalam audit?",
+      "Apa itu Statement of Applicability (SoA) dan bagaimana cara mengevaluasinya sebagai auditor?",
+      "Bagaimana kamu melakukan gap assessment terhadap ISO 27001? Walk me through prosesnya.",
+      "Dari 14 domain ISO 27002, domain mana yang paling sering memiliki finding kritis dan kenapa?",
+      "Jelaskan perbedaan antara Stage 1 dan Stage 2 audit dalam proses sertifikasi ISO 27001.",
+      "Bagaimana kamu memverifikasi bahwa kontrol yang tertulis di SoA benar-benar diimplementasikan?",
+    ],
+  },
+  {
+    category: "NIST CSF",
+    triggers: ["nist", "nist csf", "cybersecurity framework", "identify protect detect respond recover"],
+    questions: [
+      "Jelaskan 5 fungsi NIST CSF (Identify, Protect, Detect, Respond, Recover) dan contoh kontrol di masing-masing.",
+      "Bagaimana kamu menggunakan NIST CSF maturity tiers untuk menilai security posture sebuah organisasi?",
+      "Apa perbedaan antara NIST CSF dan NIST SP 800-53? Kapan kamu menggunakan masing-masing?",
+      "Bagaimana cara membuat Current Profile vs Target Profile untuk klien menggunakan NIST CSF?",
+      "Kalau organisasi baru di Tier 1, apa prioritas pertama yang kamu rekomendasikan?",
+    ],
+  },
+  {
+    category: "SOC 2",
+    triggers: ["soc 2", "soc2", "soc2", "trust service", "aicpa", "type 1", "type 2", "availability criteria", "confidentiality"],
+    questions: [
+      "Jelaskan perbedaan SOC 2 Type 1 dan Type 2. Kapan klien harus memilih yang mana?",
+      "Sebutkan 5 Trust Service Criteria (TSC) dan jelaskan Availability criteria secara mendalam.",
+      "Bagaimana kamu menguji control effectiveness dalam SOC 2 engagement?",
+      "Apa saja common finding yang biasanya muncul dalam SOC 2 engagement?",
+      "Bagaimana cara mengevaluasi kecukupan complementary user entity controls (CUECs)?",
+    ],
+  },
+  {
+    category: "Risk Assessment & Management",
+    triggers: ["risk", "risk assessment", "risk management", "risk register", "likelihood", "impact", "risk appetite", "residual risk", "inherent risk", "enterprise risk"],
+    questions: [
+      "Jelaskan metodologi risk assessment yang pernah kamu gunakan. Apa perbedaan qualitative vs quantitative?",
+      "Apa yang dimaksud inherent risk vs residual risk? Bagaimana cara menghitungnya?",
+      "Bagaimana kamu menentukan risk appetite dan risk tolerance sebuah organisasi?",
+      "Walk me through cara kamu membangun risk register dari awal untuk sebuah perusahaan teknologi.",
+      "Apa yang kamu lakukan jika risk owner menolak mengimplementasikan kontrol yang kamu rekomendasikan?",
+      "Jelaskan 4 strategi risk treatment (reduce, remove, transfer, accept) dan berikan contoh kapan masing-masing tepat digunakan.",
+    ],
+  },
+  {
+    category: "Audit Process & Evidence",
+    triggers: ["audit", "internal audit", "external audit", "working paper", "evidence", "sampling", "test of control", "substantive", "audit plan", "audit program", "audit finding", "audit report"],
+    questions: [
+      "Jelaskan tahapan audit dari planning sampai reporting. Apa deliverable di setiap tahap?",
+      "Apa perbedaan test of controls dan substantive testing? Kapan kamu menggunakan masing-masing?",
+      "Bagaimana kamu menentukan sample size dalam audit? Sebutkan metode sampling yang kamu ketahui.",
+      "Jelaskan kriteria SACS (Sufficient, Appropriate, Competent, Corroborative) untuk audit evidence.",
+      "Bagaimana cara mendokumentasikan temuan audit yang baik? Apa komponen wajib dalam sebuah finding?",
+      "Apa yang dimaksud audit opinion? Kapan kamu mengeluarkan qualified vs adverse opinion?",
+      "Bagaimana kamu menilai materiality sebuah temuan?",
+    ],
+  },
+  {
+    category: "IT General Controls (ITGC)",
+    triggers: ["itgc", "it general control", "change management", "access management", "operations", "incident management", "backup", "disaster recovery", "bcp", "drp"],
+    questions: [
+      "Apa saja 4 domain utama IT General Controls dan kontrol kunci di masing-masing?",
+      "Bagaimana kamu mengaudit change management process? Apa yang kamu verifikasi?",
+      "Jelaskan cara menguji user access management effectiveness dari awal sampai akhir.",
+      "Apa yang kamu cek saat mengaudit backup dan recovery controls?",
+      "Bagaimana cara mengevaluasi kecukupan BCP/DRP sebuah organisasi?",
+    ],
+  },
+  {
+    category: "Access Control & Identity Management",
+    triggers: ["access control", "iam", "identity", "privileged access", "privilege", "segregation of duties", "sod", "active directory", "single sign", "sso", "mfa", "multi-factor"],
+    questions: [
+      "Jelaskan konsep Segregation of Duties (SoD) dan bagaimana cara mendeteksi SoD conflicts dalam sistem ERP.",
+      "Bagaimana kamu menguji implementasi Principle of Least Privilege?",
+      "Apa yang kamu verifikasi saat mengaudit privileged access management (PAM)?",
+      "Jelaskan proses user access review — apa yang kamu cari sebagai auditor?",
+      "Bagaimana cara mengaudit offboarding process untuk memastikan akses dicabut tepat waktu?",
+    ],
+  },
+  {
+    category: "Cybersecurity Technical",
+    triggers: ["cybersecurity", "cyber security", "information security", "vulnerability", "penetration test", "pentest", "vapt", "siem", "log management", "monitoring", "incident response", "patch management", "encryption", "firewall", "network security", "dlp", "endpoint"],
+    questions: [
+      "Dengan background cybersecurity kamu, bagaimana kamu mengaudit vulnerability management process?",
+      "Bagaimana cara mengaudit incident response plan? Apa yang kamu test dan verifikasi?",
+      "Jelaskan cara mengevaluasi efektivitas SIEM dan logging controls sebuah organisasi.",
+      "Apa yang kamu periksa saat mengaudit patch management — termasuk critical systems?",
+      "Bagaimana kamu menilai kecukupan network security controls (firewall, segmentation, etc)?",
+      "Ceritakan pengalamanmu di cybersecurity dan bagaimana skill itu membuat kamu menjadi auditor yang lebih baik.",
+    ],
+  },
+  {
+    category: "GRC & Compliance",
+    triggers: ["grc", "governance", "compliance", "regulatory", "regulation", "policy", "procedure", "framework", "risk governance", "internal control"],
+    questions: [
+      "Apa yang dimaksud GRC dan bagaimana ketiga elemen tersebut saling berhubungi dalam sebuah organisasi?",
+      "Bagaimana kamu membantu organisasi membangun compliance program dari awal?",
+      "Jelaskan pengalamanmu dalam mengelola multiple regulatory requirements secara bersamaan.",
+      "Bagaimana cara membuat policy yang efektif, bisa diimplementasikan, dan mudah di-audit?",
+      "Apa yang kamu lakukan saat ada konflik antara kebutuhan bisnis dan compliance requirements?",
+    ],
+  },
+  {
+    category: "Data Privacy & PDPA / GDPR",
+    triggers: ["privacy", "data protection", "pdpa", "gdpr", "personal data", "data breach", "privacy impact", "pia", "dpia", "consent"],
+    questions: [
+      "Jelaskan prinsip-prinsip dasar data protection dan bagaimana relevansinya dalam IT audit.",
+      "Bagaimana kamu melakukan Privacy Impact Assessment (PIA) atau DPIA?",
+      "Apa yang kamu periksa saat mengaudit data retention dan disposal policy?",
+      "Bagaimana cara mengevaluasi kesiapan organisasi dalam merespons data breach?",
+      "Apa perbedaan controller dan processor dalam konteks GDPR/PDPA? Implikasinya ke audit?",
+    ],
+  },
+  {
+    category: "Fintech / Perbankan / OJK",
+    triggers: ["fintech", "bank", "banking", "financial", "payment", "ojk", "bi", "lending", "insurance", "financial services", "pci dss", "swift", "pojk", "bpjs", "dana", "gopay", "ovo"],
+    questions: [
+      "Apa regulasi OJK yang paling relevan untuk IT risk management di sektor keuangan Indonesia?",
+      "Bagaimana POJK mengatur IT audit di lembaga keuangan? POJK mana yang kamu ketahui?",
+      "Jelaskan cara mengaudit proses KYC (Know Your Customer) dari perspektif IT audit.",
+      "Apa yang kamu periksa saat melakukan IT audit untuk sebuah payment gateway atau e-money?",
+      "Bagaimana cara mengaudit third-party / vendor risk management di sektor perbankan?",
+    ],
+  },
+  {
+    category: "Behavioral & Soft Skills",
+    triggers: [],
+    questions: [
+      "Ceritakan situasi dimana kamu harus menyampaikan temuan yang sensitif kepada manajemen senior. Bagaimana hasilnya?",
+      "Bagaimana cara kamu menjelaskan temuan teknis yang kompleks kepada stakeholder non-teknis?",
+      "Ceritakan situasi ketika kamu tidak setuju dengan keputusan lead auditor. Bagaimana kamu menanganinya?",
+      "Apa yang kamu lakukan saat auditee tidak kooperatif dalam memberikan evidence yang diminta?",
+      "Bagaimana kamu memprioritaskan pekerjaan saat ada beberapa deadline bersamaan?",
+      "Kenapa kamu memutuskan untuk pindah dari cybersecurity ke IT audit? Apa yang menarik dari audit?",
+    ],
+  },
+  {
+    category: "Pertanyaan Umum IT Auditor",
+    triggers: ["auditor", "it auditor", "internal auditor", "audit manager", "senior auditor", "associate", "analyst", "grc analyst"],
+    questions: [
+      "Apa perbedaan internal audit dan external audit? Kelebihan dan kekurangan masing-masing?",
+      "Bagaimana cara kamu stay up-to-date dengan perkembangan regulasi dan framework audit?",
+      "Sertifikasi apa yang kamu miliki atau sedang kamu kejar? (CISA, CISM, CIA, ISO LA, dll.)",
+      "Gambarkan audit yang paling menantang yang pernah kamu jalani.",
+      "Di mana kamu melihat dirimu dalam 3–5 tahun sebagai auditor?",
+    ],
+  },
+];
+
+function generateQuestions(requirements: string, role: string): QuestionGroup[] {
+  const text = (requirements + " " + role).toLowerCase();
+  const result: QuestionGroup[] = [];
+
+  for (const entry of QUESTION_BANK) {
+    if (entry.triggers.length === 0) continue;
+    if (entry.triggers.some((t) => text.includes(t))) {
+      result.push({ category: entry.category, questions: entry.questions });
+    }
+  }
+
+  // Always add behavioral
+  const behavioral = QUESTION_BANK.find((e) => e.triggers.length === 0);
+  if (behavioral) result.push({ category: behavioral.category, questions: behavioral.questions });
+
+  // If only behavioral matched, add generic audit questions too
+  if (result.length === 1) {
+    const generic = QUESTION_BANK.find((e) => e.category === "Pertanyaan Umum IT Auditor");
+    const auditProcess = QUESTION_BANK.find((e) => e.category === "Audit Process & Evidence");
+    if (auditProcess) result.unshift({ category: auditProcess.category, questions: auditProcess.questions });
+    if (generic) result.unshift({ category: generic.category, questions: generic.questions });
+  }
+
+  return result;
+}
 
 // ─── KEYWORD MATCHING ────────────────────────────────────────────────────────
 
@@ -115,14 +297,17 @@ export default function JobTracker() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<Status | "all">("all");
   const [matchResult, setMatchResult] = useState<{ jobId: string; found: string[]; missing: string[]; total: number } | null>(null);
+  const [questionResult, setQuestionResult] = useState<{ jobId: string; groups: QuestionGroup[] } | null>(null);
+  const [practicedQuestions, setPracticedQuestions] = useState<string[]>([]);
 
-  // Load from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem("polaris-jobs");
       if (stored) setJobs(JSON.parse(stored));
       const storedCv = localStorage.getItem("polaris-cv");
       if (storedCv) setCv(storedCv);
+      const storedPracticed = localStorage.getItem("polaris-practiced");
+      if (storedPracticed) setPracticedQuestions(JSON.parse(storedPracticed));
     } catch { /* ignore */ }
   }, []);
 
@@ -157,6 +342,7 @@ export default function JobTracker() {
     saveJobs(jobs.filter((j) => j.id !== id));
     if (expanded === id) setExpanded(null);
     if (matchResult?.jobId === id) setMatchResult(null);
+    if (questionResult?.jobId === id) setQuestionResult(null);
   }
 
   function updateJobField(id: string, field: keyof Job, value: string) {
@@ -177,6 +363,24 @@ export default function JobTracker() {
     setExpanded(job.id);
   }
 
+  function runQuestions(job: Job) {
+    if (questionResult?.jobId === job.id) {
+      setQuestionResult(null);
+      return;
+    }
+    const groups = generateQuestions(job.requirements, job.role);
+    setQuestionResult({ jobId: job.id, groups });
+    setExpanded(job.id);
+  }
+
+  function togglePracticed(q: string) {
+    const updated = practicedQuestions.includes(q)
+      ? practicedQuestions.filter((p) => p !== q)
+      : [...practicedQuestions, q];
+    setPracticedQuestions(updated);
+    localStorage.setItem("polaris-practiced", JSON.stringify(updated));
+  }
+
   const filtered = useMemo(() =>
     filterStatus === "all" ? jobs : jobs.filter((j) => j.status === filterStatus),
     [jobs, filterStatus]
@@ -193,7 +397,7 @@ export default function JobTracker() {
   return (
     <KnowledgeShell
       title="Job Tracker"
-      subtitle="Track semua lamaran kerja kamu — dari wishlist sampai offer, lengkap dengan cek kecocokan CV."
+      subtitle="Track semua lamaran kerja kamu — dari wishlist sampai offer, lengkap dengan cek kecocokan CV dan pertanyaan interview."
       titleClassName="text-4xl"
     >
       {/* ── Bible Verse ── */}
@@ -354,7 +558,7 @@ export default function JobTracker() {
           <div className="mt-3">
             <label className="block text-xs font-semibold text-slate-500 mb-1">
               Requirements / Job Description
-              <span className="ml-1 text-indigo-500">(paste dari job posting — untuk keyword matching)</span>
+              <span className="ml-1 text-indigo-500">(paste dari job posting — untuk keyword matching & generate pertanyaan)</span>
             </label>
             <textarea
               value={form.requirements}
@@ -408,6 +612,9 @@ export default function JobTracker() {
           const isOpen = expanded === job.id;
           const st = STATUS_CONFIG[job.status];
           const match = matchResult?.jobId === job.id ? matchResult : null;
+          const questions = questionResult?.jobId === job.id ? questionResult.groups : null;
+          const totalQs = questions ? questions.reduce((acc, g) => acc + g.questions.length, 0) : 0;
+          const doneQs = questions ? questions.flatMap((g) => g.questions).filter((q) => practicedQuestions.includes(q)).length : 0;
 
           return (
             <div
@@ -436,7 +643,7 @@ export default function JobTracker() {
                   <p className="text-sm text-slate-500">{job.company}</p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                   {job.url && (
                     <a
                       href={job.url}
@@ -454,6 +661,17 @@ export default function JobTracker() {
                     title="Cek kecocokan CV dengan requirements"
                   >
                     🔍 Cek CV
+                  </button>
+                  <button
+                    onClick={() => runQuestions(job)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                      questions
+                        ? "bg-amber-500 text-white hover:bg-amber-600"
+                        : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                    }`}
+                    title="Generate kemungkinan pertanyaan interview berdasarkan job ini"
+                  >
+                    💬 Prep Questions
                   </button>
                   <button
                     onClick={() => setExpanded(isOpen ? null : job.id)}
@@ -542,6 +760,72 @@ export default function JobTracker() {
                     </div>
                   )}
 
+                  {/* Interview Questions */}
+                  {questions && (
+                    <div className="rounded-xl border border-amber-200 bg-white p-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-bold text-slate-800">💬 Kemungkinan Pertanyaan Interview</p>
+                        <span className={`rounded-full px-3 py-1 text-xs font-bold ${
+                          doneQs === totalQs && totalQs > 0 ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+                        }`}>
+                          {doneQs}/{totalQs} dipraktikkan
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400 mb-4">
+                        Dihasilkan berdasarkan requirements job ini. Centang setiap pertanyaan setelah kamu berlatih menjawabnya.
+                      </p>
+
+                      <div className="space-y-5">
+                        {questions.map((group) => (
+                          <div key={group.category}>
+                            <p className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-2 flex items-center gap-2">
+                              <span className="h-px flex-1 bg-amber-100" />
+                              {group.category}
+                              <span className="h-px flex-1 bg-amber-100" />
+                            </p>
+                            <div className="space-y-2">
+                              {group.questions.map((q) => {
+                                const done = practicedQuestions.includes(q);
+                                return (
+                                  <label
+                                    key={q}
+                                    className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-all ${
+                                      done
+                                        ? "border-green-200 bg-green-50"
+                                        : "border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200"
+                                    }`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={done}
+                                      onChange={() => togglePracticed(q)}
+                                      className="mt-0.5 h-4 w-4 accent-green-600 shrink-0"
+                                    />
+                                    <span className={`text-sm leading-6 ${done ? "text-green-700 line-through decoration-green-400" : "text-slate-700"}`}>
+                                      {q}
+                                    </span>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 rounded-lg bg-indigo-50 border border-indigo-100 p-3 flex items-center justify-between gap-3">
+                        <p className="text-xs text-indigo-700">
+                          Mau latihan jawaban lebih dalam? Buka Interview Lab untuk 30+ Q&A lengkap dengan model jawaban.
+                        </p>
+                        <a
+                          href="/interview-lab"
+                          className="shrink-0 rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+                        >
+                          Interview Lab →
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Requirements */}
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
@@ -555,12 +839,20 @@ export default function JobTracker() {
                       className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 focus:border-indigo-400 focus:outline-none resize-y"
                     />
                     {job.requirements && (
-                      <button
-                        onClick={() => runMatch(job)}
-                        className="mt-2 rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
-                      >
-                        🔍 Cek kecocokan dengan CV
-                      </button>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <button
+                          onClick={() => runMatch(job)}
+                          className="rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+                        >
+                          🔍 Cek kecocokan dengan CV
+                        </button>
+                        <button
+                          onClick={() => runQuestions(job)}
+                          className="rounded-full bg-amber-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition"
+                        >
+                          💬 Generate pertanyaan interview
+                        </button>
+                      </div>
                     )}
                   </div>
 
