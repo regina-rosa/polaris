@@ -75,6 +75,15 @@ const TOOLS: Tool[] = [
     border: "border-green-100 hover:border-green-300",
   },
   {
+    href: "/job-tracker",
+    icon: "💼",
+    label: "Job Tracker",
+    description: "Track semua lamaran kerja — tambah job, paste requirements, cek kecocokan keyword dengan CV kamu.",
+    tag: "Career",
+    tagColor: "bg-rose-100 text-rose-700",
+    border: "border-rose-100 hover:border-rose-300",
+  },
+  {
     href: "/settings",
     icon: "⚙️",
     label: "Settings",

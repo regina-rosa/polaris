@@ -9,6 +9,7 @@ const menu = [
   { label: "📋 Evidence Library", href: "/evidence-library" },
   { label: "🤖 AI Policy Review", href: "/ai-policy-review" },
   { label: "🎤 Interview Lab", href: "/interview-lab" },
+  { label: "💼 Job Tracker", href: "/job-tracker" },
   { label: "⚙️ Settings", href: "/settings" },
 ];
 
